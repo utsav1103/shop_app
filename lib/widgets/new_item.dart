@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shop_app/data/categories.dart';
 import 'package:shop_app/models/category.dart';
 import 'package:shop_app/models/grocery_item.dart';
@@ -21,6 +22,7 @@ class _NewItemState extends State<NewItem> {
   void _saveItem() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      
       Navigator.of(context).pop(
         GroceryItem(
           id: DateTime.now().toString(),
