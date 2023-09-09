@@ -15,8 +15,9 @@ class GroceryList extends StatefulWidget {
 }
 
 class _GroceryListState extends State<GroceryList> {
-   List<GroceryItem> _groceryItems = [];
-   var _isLoading = true;
+  List<GroceryItem> _groceryItems = [];
+  var _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -28,8 +29,12 @@ class _GroceryListState extends State<GroceryList> {
     final url = Uri.https(
         'flutter-prep-45c3b-default-rtdb.firebaseio.com', 'shopping-list.json');
     final response = await http.get(url);
-    final Map<String, dynamic> listData =
-        json.decode(response.body);
+    if (response.statusCode >= 404) {
+      setState(() {
+        _error = 'Failed to fetch data....';
+      });
+    }
+    final Map<String, dynamic> listData = json.decode(response.body);
     final List<GroceryItem> loadItems = [];
     for (final item in listData.entries) {
       final Category = categories.entries
@@ -47,7 +52,7 @@ class _GroceryListState extends State<GroceryList> {
     }
     setState(() {
       _groceryItems = loadItems;
-      _isLoading = false; 
+      _isLoading = false;
     });
   }
 
@@ -57,13 +62,12 @@ class _GroceryListState extends State<GroceryList> {
         builder: (ctx) => const NewItem(),
       ),
     );
-    if(newItem == null){
+    if (newItem == null) {
       return;
     }
     setState(() {
       _groceryItems.add(newItem);
     });
-    
   }
 
   void _removeItem(GroceryItem item) {
@@ -77,8 +81,10 @@ class _GroceryListState extends State<GroceryList> {
     Widget content = Center(
       child: Text('No items added yet,'),
     );
-    if(_isLoading){
-      content = const Center(child: CircularProgressIndicator(),);
+    if (_isLoading) {
+      content = const Center(
+        child: CircularProgressIndicator(),
+      );
     }
 
     if (_groceryItems.isNotEmpty) {
@@ -102,6 +108,10 @@ class _GroceryListState extends State<GroceryList> {
           ),
         ),
       );
+    }
+
+    if (_error != null) {
+      content = Center(child: Text(_error!));
     }
 
     return Scaffold(

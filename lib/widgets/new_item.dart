@@ -170,7 +170,7 @@ class _NewItemState extends State<NewItem> {
                             child: CircularProgressIndicator(),
                           )
                         : const Text('Add Item'),
-                  ),
+                  )
                 ],
               ),
             ],
